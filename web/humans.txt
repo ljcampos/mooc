@@ -1,0 +1,12 @@
+/* TEAM */
+Chef: Aarón López Sosa
+Contact: aaronlopezsosa [at] gmail.com
+Twitter: @als_link
+From: Villahermosa, Tabasco, México
+
+
+/* SITE */
+Last update: 2015/03/20
+Standars: PHP, HTML5, CSS3
+Components: Modernizr, jQuery
+Software: Sublime text, FileZilla

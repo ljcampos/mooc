@@ -1,0 +1,26 @@
+{% extends 'main.html.twig' %}
+
+{% block title %}
+Suscribirme
+{% endblock %}
+
+{% block meta_description %}
+<meta name = "descripcion" content = "Formulario de registro de usuarios" />
+{% endblock %}
+
+{% block main_content %}
+
+{% if flash | length > 0 %}
+	{% if flash.error %}
+	<h4>{{flash.error}}</h4>
+	{% endif %}
+{% endif %}
+
+<form action = "{{action}}" method = "POST">
+	<input type = "text" name = "username_suscr" placeholder = "Nombre de usuario" />
+	<input type = "text" name = "email_suscr" placeholder = "Correo electrónico" />
+	<input type = "password" name = "password_suscr" placeholder = "Contraseña" />
+	<input type = "submit" name = "btn-suscr" value = "Registrate" />
+	<input type = "hidden" name = "_token" value = "{{token}}" />
+</form>
+{% endblock %}
