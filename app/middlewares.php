@@ -39,6 +39,12 @@ function checkToken () {
 }
 
 
+/**********************"Middleware verificarInactividad()"*********************************
+La función de este middleware es la de verificar el tiempo de inactividad máximo permitido
+para una sesión activa. Este periodo es de 30 minutos máximo, en caso que el periodo de
+inactividad sea mayor al permitido, se procedera a cerrar la sesión actual y redireccionar
+al usuario al formulario de autenticación mostrandole un mensaje de lo ocurrido.
+******************************************************************************************/
 function verificarInactividad () {
 
 	$app 		=	\Slim\Slim::getInstance();
@@ -48,7 +54,7 @@ function verificarInactividad () {
 	
 		$ip_cliente 		=	$_SERVER['REMOTE_ADDR'];
 		$fecha_actual 		=	strtotime( date('Y:m:d H:i:s') );
-		$fecha_expiracion 	=	strtotime('+1 minute', $sesion['ultima_accion']);
+		$fecha_expiracion 	=	strtotime('+30 minute', $sesion['ultima_accion']);
 
 		if ( $fecha_actual > $fecha_expiracion ) {
 			
@@ -65,4 +71,30 @@ function verificarInactividad () {
 	}
 
 }
+
+
+/**********************"Middleware $authenticateForLevel"********************
+La función de este middleware es la de verificar si una sesión está activa, 
+asi también verificar el nivel de acceso necesario para ingresar a una ruta.
+*****************************************************************************/
+$authenticateForLevel = function ($auth_level) {
+
+	return function () use ($auth_level) {
+
+		$app 		=	\Slim\Slim::getInstance();
+		$sesion 	=	Session::getSession();
+
+		if ( is_null($sesion) ) {
+			$app->flash('error', 'Login required');
+			$app->redirect( $app->urlFor('login-form') );
+		} else {
+
+			if ( $sesion['auth_level'] < $auth_level ) {
+
+				$app->flash('auth_error', 'No tiene los permisos suficientes para acceder a esta sección');
+			}
+		}
+
+	};
+};
 

@@ -7,8 +7,8 @@ class AbstractView {
 
 	public function __construct () {
 
-		//$session 	=	Utilities::getUserSession();
-		//$this->addVar('session', $session);
+		$session 	=	Session::getSession();
+		$this->addVar('session', $session);
 		$this->addVar('flash', $_SESSION['slim.flash']);
 		
 	}

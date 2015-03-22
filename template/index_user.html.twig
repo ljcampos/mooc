@@ -1,0 +1,23 @@
+{% extends 'main.html.twig' %}
+
+{% block title %}
+Página de perfil de un usuario
+{% endblock %}
+
+{% block meta_description %}
+<meta name = "description" content = "" />
+{% endblock %}
+
+{% block main_content %}
+ 
+ 	{% if flash.auth_error %}
+ 		<h4>{{flash.auth_error}}</h4>
+ 	{% else %}
+ 	<h1>Página de perfil de un usuario</h1>
+ 	<ul>
+ 		<li>Usuario: <strong>{{profil.username}}</strong></li>
+ 		<li>Correo electrónico: <strong>{{profil.email}}</strong></li>
+ 	</ul>
+ 	{% endif %}
+
+{% endblock %}

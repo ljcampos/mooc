@@ -15,7 +15,7 @@ Login
 		{% endif %}
 	{% endif %}
 <form action = "{{action}}" method = "POST">
-	<input type = "text" name = "usr_login" placeholder = "Nombre de usuario" />
+	<input type = "email" name = "usr_login" placeholder = "Correo electrónico" />
 	<input type = "password" name = "passwd_login" placeholder = "Contraseña" />
 	<input type = "submit" name = "btn-login" value = "Iniciar" />
 	<input type = "hidden" name = "_token" value = "{{token}}" />

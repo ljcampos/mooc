@@ -6,6 +6,36 @@ class Authentication {
 
 	public function __construct ( $app ) { $this->app = $app; }
 
+	
+	public function Authenticate ($email, $password) {
+
+		$profil 			=	Profil::with('user')->where('email', '=', $email)->get();
+		$total_elementos 	=	count($profil);
+		$action 			=	null;
+
+		if ($total_elementos > 0) {
+
+
+			$hash 	=	hash('sha256', $password . $profil[0]->user->salt);
+		
+			if ($hash === $profil[0]->user->password) {
+
+				$this->loadProfil($profil[0], $profil[0]->user->role->auth_level);
+				$action 	=	str_replace(':username', $profil[0]->username, $this->app->urlFor('home-user'));
+
+			} else {
+				$action 	=	$this->app->request->getPath();
+				$this->app->flash('error', 'Correo electrónico y/o contraseña incorrecto');
+			}
+
+		} else {
+			$action 	=	$this->app->request->getPath();
+			$this->app->flash('error', 'Correo electrónico y/o contraseña incorrecto');
+		}
+
+		$this->app->redirect( $action );
+	}
+
 	public function createUser($username, $password, $email, $role_id) {
 
 		$profil 		=	Profil::where('username', '=', $username)->orWhere('email', '=', $email)->get();

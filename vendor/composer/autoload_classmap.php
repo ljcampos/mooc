@@ -11,6 +11,7 @@ return array(
     'Connection' => $baseDir . '/model/Connection.class.php',
     'Controller' => $baseDir . '/controller/Controller.class.php',
     'FrontController' => $baseDir . '/controller/FrontController.class.php',
+    'IndexUserView' => $baseDir . '/modelView/IndexUserView.class.php',
     'IndexView' => $baseDir . '/modelView/IndexView.class.php',
     'LoginView' => $baseDir . '/modelView/LoginView.class.php',
     'PHPMailer' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',

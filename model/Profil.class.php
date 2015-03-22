@@ -7,6 +7,10 @@ class Profil extends Model {
 	protected 	$table 			=	'Profil';
 	protected	$primaryKey 	=	'profil_id';
 	public 		$timestamps 	=	false;
+
+	public function user () {
+		return $this->belongsTo('User', 'profil_id');
+	}
 }
 
 ?>

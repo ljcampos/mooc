@@ -55,11 +55,9 @@ $app->post('/suscribirme', 'checkToken', function () use ( $app ) {
 /*************************************************************************
 Ruta que muestra la págin principal de un usuario
 *************************************************************************/
-$app->get('/user/:username', 'verificarInactividad', function ( $username ) use ( $app ) {
+$app->get('/user/:username', 'verificarInactividad', $authenticateForLevel(100), function ( $username ) use ( $app ) {
 
-	echo $username;
-	echo '<pre>';
-	print_r($_SESSION['perfil']);
-	echo '</pre>';
+	$controller 	=	new UserController( $app );
+	$controller->callAction('index', $username);
 
 })->name('home-user');

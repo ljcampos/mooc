@@ -6,10 +6,12 @@ class UserController extends Controller {
 		'login'				=>	'loginForm',
 		'loginAction'		=>	'loginAction',
 		'suscribirme'		=>	'suscribirmeForm',
-		'suscribirmeAction'	=>	'suscribirmeAction'
+		'suscribirmeAction'	=>	'suscribirmeAction',
+		'index'				=>	'indexAction'
 	);
 
 	public function __construct ( $app ) { $this->app = $app; }
+
 
 	public function loginForm () {
 
@@ -20,8 +22,24 @@ class UserController extends Controller {
 		$this->view->display();
 	}
 
+
 	public function loginAction (Array $post) {
 
+		$keys 		=	array('usr_login', 'passwd_login');
+		$this->verificarKeys($post, $keys);
+
+		$email 		=	strip_tags( $post['usr_login'] );
+		$email 		=	filter_var($email, FILTER_VALIDATE_EMAIL);
+		$password 	=	strip_tags( $post['passwd_login'] );
+		$password 	=	filter_var($password, FILTER_SANITIZE_STRING);
+
+		if ( $email === "" || $password === "") {
+			$this->app->flash('error', 'Debe ingresar todos los valores');
+			$this->app->redirect( $this->app->request->getPath() );
+		}
+
+		$obj 	=	new Authentication( $this->app );
+		$obj->Authenticate($email, $password);
 
 	}
 
@@ -73,9 +91,32 @@ class UserController extends Controller {
 			$auth->createUser($username, $password, $email, 3);
 
 		}
-
-		
+	
 	}
+
+
+	public function indexAction ($username) {
+
+		$username 	=	strip_tags( $username );
+		$username 	=	filter_var($username, FILTER_SANITIZE_STRING);
+
+		$profil 	=	Profil::with('user')->where('username', '=', $username)->get();
+		$total_elementos 	=	count($profil);
+
+		if ( $total_elementos > 0 ) {
+
+			$this->view 	=	new IndexUserView($profil[0]);
+
+		} else {
+
+			$this->view 	=	new IndexUserView();
+
+		}	
+
+		$this->view->display();
+
+	}
+
 
 	private function verificarKeys (Array $valores, Array $keys) {
 
@@ -89,6 +130,7 @@ class UserController extends Controller {
 		}
 
 	}
+
 
 }
 
