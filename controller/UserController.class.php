@@ -7,7 +7,9 @@ class UserController extends Controller {
 		'loginAction'		=>	'loginAction',
 		'suscribirme'		=>	'suscribirmeForm',
 		'suscribirmeAction'	=>	'suscribirmeAction',
-		'index'				=>	'indexAction'
+		'index'				=>	'indexAction',
+		'updateUser'		=>	'updateUserForm',
+		'updateUserAction' 	=>	'updateUserAction'
 	);
 
 	public function __construct ( $app ) { $this->app = $app; }
@@ -118,6 +120,103 @@ class UserController extends Controller {
 	}
 
 
+	public function updateUserForm ($username) {
+
+		$username 	=	strip_tags($username);
+		$username 	= 	filter_var($username, FILTER_SANITIZE_STRING);
+
+		$profil 	=	Profil::with('user')->where('username', '=', $username)->get();
+		$total_elementos 	=	count($profil);
+
+		if ($total_elementos > 0) {
+
+			$session 		=	Session::getSession();
+
+			if ( $session['username'] === $username || $session['auth_level'] >= 1000 ) {
+
+				$countries 		=	Country::all();
+				$action 		=	str_replace(':username', $profil[0]->username, $this->app->urlFor('modif-user-put'));
+				$token 			=	Utilities::generateFormToken();
+				$this->view 	=	new UserUpdateView($profil[0], $action, $token, $countries);
+
+			} else {
+				
+				$this->app->flash('auth_error', 'No tiene los permisos suficientes para acceder a esta sección');				
+				$this->view 	=	new UserUpdateView();				
+			}
+
+
+		} else {
+
+			$this->view 	=	new UserUpdateView();
+		}
+
+		$this->view->display();
+	}
+
+	public function updateUserAction (Array $put) {
+
+		$username 	=	strip_tags($put['usr']);
+		$username 	=	filter_var($username, FILTER_SANITIZE_STRING);
+
+		$profil 	=	Profil::with('user')->where('username', '=', $username)->get();
+		$total_elementos 	=	count($profil);
+		$action 	=	str_replace(':username', $username, $this->app->urlFor('form-modif-user'));
+
+
+		if ($total_elementos > 0) {
+
+			$keys 	=	array('firstname_upd', 'lastname_upd', 'email_upd', 'birthday_upd', 'gender_upd', 'country_upd', 'description_upd', 'address_upd');
+			$this->verificarKeys($put['put'], $keys);
+			$vars 	=	$put['put'];
+			$this->sanitizeVars($vars);
+
+			$firstname 		=	$vars['firstname_upd'];
+			$lastname 		=	$vars['lastname_upd'];
+			$email 	 		=	$vars['email_upd'];
+			$email 			=	filter_var($email, FILTER_VALIDATE_EMAIL);
+			$birthday 		=	$vars['birthday_upd'];
+			$gender 		=	$vars['gender_upd'];
+			$country 		=	$vars['country_upd'];
+			$description 	=	$vars['description_upd'];
+			$address		=	$vars['address_upd'];
+
+			require_once __DIR__ . '/../vendor/smtp-validate-email-master/smtp-validate-email.php';
+
+			$from 		=	'aaronlopezsosa@gmail.com';
+			$validator 	=	new SMTP_Validate_Email($email, $from);
+			$smtp_results 	=	$validator->validate();
+
+			if (!$email || $smtp_results[$email] == 0) {
+				$this->app->flash('error', 'correo electrónico no válido');
+			} else {
+
+				$profil[0]->firstname 	=	$firstname;
+				$profil[0]->lastname 	=	$lastname;
+				$profil[0]->email 		=	$email;
+				$profil[0]->birthday 	=	$birthday;
+				$profil[0]->gender 		=	$gender;
+				$profil[0]->country_id 	=	$country;
+				$profil[0]->description =	$description;
+				$profil[0]->address 	=	$address;
+
+				if ($profil[0]->save()) {
+					$this->app->flash('success', 'Se actualizaron correctamente sus datos');
+				} else {
+					$this->app->flash('error', 'Estamos presentando problemas, por favor vuelva a intentarlo mas tarde');
+				}
+
+			}
+
+		} else {
+			$this->app->flash('error', 'Usuario no encontrado');
+		}
+
+		$this->app->redirect($action);
+
+	}
+
+
 	private function verificarKeys (Array $valores, Array $keys) {
 
 		$total_elementos 	=	count($valores);
@@ -127,6 +226,16 @@ class UserController extends Controller {
 				$this->app->flash('error', 'Faltan valores');
 				$this->app->redirect( $this->app->request->getPath() );
 			}
+		}
+
+	}
+
+	private function sanitizeVars (Array &$vars) {
+
+		foreach ($vars as $key => $value) {
+			$value 			=	strip_tags($value);
+			$value 			=	filter_var($value, FILTER_SANITIZE_STRING);
+			$vars[$key] 	=	$value;
 		}
 
 	}

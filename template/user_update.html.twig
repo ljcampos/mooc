@@ -1,0 +1,199 @@
+{% extends 'main.html.twig' %}
+
+{% block title %}
+Formulario para modificar un usuario
+{% endblock %}
+
+{% block meta_description %}
+<meta name = "description" content = "Formulario para modificar los datos de un usuario" />
+{% endblock %}
+
+{% block custom_stylesheet %}
+<link rel="stylesheet" href="/stylesheet/datepicker/default.css" />
+<link rel="stylesheet" href="/stylesheet/datepicker/style.css" />
+<link rel="stylesheet" href="/stylesheet/datepicker/shCoreDefault.css">
+<link rel="stylesheet" href="/stylesheet/dropzone.css">
+<style>
+	img{width: 100%;}
+	.btn-warning {width: 100%;}
+</style>
+{% endblock %}
+
+{% block main_content %}
+	
+	{% if flash.auth_error %}
+	<h4>{{flash.auth_error}}</h4>
+	{% else %}
+		{% if profil | length > 0 %}
+
+			<h1>Página de modificación</h1>
+
+			{% if flash.error %}
+			<h4>{{flash.error}}</h4>
+			{% endif %}
+
+			{% if flash.success %}
+			<h4>{{flash.success}}</h4>
+			{% endif %}
+
+			<div class = "row">
+				<div class = "col-xs-2">
+					<img src = "/imagen.php?imagen_id={{profil.avatar}}">
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#myModal">
+					  Cambiar
+					</button>
+				</div>
+			</div>
+
+			<form action = "{{action}}" method = "POST">
+				<div class = "form-group">
+					<label class = "col-sm-2 control-label">Username</label>
+					<div class = "col-sm-10">
+						<p class = "form-control-static">{{profil.username}}</p>
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "lastname_upd" class = "col-sm-2 control-label">Nombre</label>
+					<div class = "col-sm-10">
+						<input class = "form-control" type = "text" name = "firstname_upd" value = "{{profil.firstname}}" />
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "firstname_upd" class = "col-sm-2 control-label">Apellidos</label>
+					<div class = "col-sm-10">
+						<input class = "form-control" type = "text" name = "lastname_upd" value = "{{profil.lastname}}" />
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "email_upd" class = "col-sm-2 control-label">Correo electrónico</label>
+					<div class = "col-sm-10">
+						<input class = "form-control" type = "email" name = "email_upd" value = "{{profil.email}}" />
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "birthday_upd" class = "col-sm-2 control-label">Fecha de nacimiento</label>
+					<div class = "col-sm-10">
+						<input name = "birthday_upd" id = "datepicker" type = "text" data-zdp_start_date = "{{profil.birthday}}" value = "{{profil.birthday}}" />
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "gender_upd" class = "col-sm-2 control-label">Género</label>
+					<div class = "col-sm-10">
+						<select class = "form-control" name = "gender_upd">
+							<option value = "1">Masculino</option>
+							<option value = "2">Femenino</option>
+						</select>
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "country_upd" class = "col-sm-2 control-label">País</label>
+					<div class = "col-sm-10">
+						<select class = "form-control" name = "country_upd">
+							{% for country in countries %}
+								{% if profil.country_id == country.country_id %}
+								<option selected value = "{{country.country_id}}">{{country.country}}</option>
+								{% else %}
+								<option value = "{{country.country_id}}">{{country.country}}</option>
+								{% endif %}
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "description_upd" class = "col-sm-2 control-label">Descripción</label>
+					<div class = "col-sm-10">
+						<textarea class = "form-control" name = "description_upd" placeholder = "Describete en 150 palabras...">{{profil.description}}</textarea>
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "address_upd" class = "col-sm-2 control-label">Dirección</label>
+					<div class = "col-sm-10">
+						<input class = "form-control" type = "text" name = "address_upd" value = "{{profil.address}}" />
+					</div>
+				</div>
+
+				<a class  = "btn btn-danger" href = "/user/{{profil.username}}">Cancelar</a>
+				<button class = "btn btn-success" type = "submit">Guardar</button>
+
+				<input type = "hidden" name = "_token" value = "{{token}}" />
+				<input type = "hidden" name = "_METHOD" value = "PUT" />
+
+			</form>
+
+			<!-- Modal -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+			    	<div class="modal-content">
+			    		<div class="modal-header">
+			        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        		<h3 class="modal-title" id="myModalLabel">Seleccione una imagen</h3>
+			      		</div>
+			      		<div class="modal-body">
+			        		<!-- Drag and drop zone -->
+			        		<form action = "/avatar" class = "dropzone" id = "dropzone">
+			        			<div class = "fallback">
+			        				<input type = "file" name = "file" />
+			        			</div>
+			        		</form>
+			      		</div>
+			      		<div class="modal-footer">
+			        		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			        		<button type="button" class="sendImage btn btn-success">Guardar</button>
+			      		</div>
+			    	</div>
+			  	</div>
+			</div>
+
+		{% else %}
+			<h1>Usuario no encontrado</h1>
+		{% endif %}
+	{% endif %}
+
+{% endblock %}
+
+
+{% block javascript %}
+<script src="/javascript/datepicker/XRegExp.js"></script>
+<script src="/javascript/datepicker/shCore.js"></script>
+<script src="/javascript/datepicker/shLegacy.js"></script>
+<script src="/javascript/datepicker/shBrushJScript.js"></script>
+<script src="/javascript/datepicker/shBrushXml.js"></script>
+<script src="/javascript/datepicker/zebra_datepicker.js"></script>
+<script src="/javascript/datepicker/core.js"></script>
+<script src="/javascript/dropzone.js"></script>
+<script>
+$(document).ready(function() {
+
+	$('#datepicker').Zebra_DatePicker();
+
+});
+</script>
+<script>
+Dropzone.options.dropzone = {
+
+	init: function() {
+		this.on("maxfilesexceeded", function () {
+			//this.removeAllFiles(true);
+			var fileList = this.getRejectedFiles();
+			fileList 	 = fileList[0];
+			this.removeFile(fileList);
+			console.log(fileList);
+			alert('Maximo de archivos');
+			
+		});
+	},
+	paramName: "file", // The name that will be used to transfer the file
+	maxFilesize: 2, // MB
+	maxFiles: 1, //Maximo de archivos
+	uploadMultiple: false,
+	acceptedFiles: "image/*",
+  	accept: function(file, done) {
+    	done();
+    	
+    	console.log(file.name);
+  	}
+};
+</script>
+
+{% endblock %}

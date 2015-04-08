@@ -4,9 +4,10 @@
 		<a href = "#">¿Quienes somos?</a>
 		{% if session | length > 0 %}
 		<a href = "#">{{session.username}}</a>
-		<a href = "#">Configuración</a>
+		<a href = "/user/{{session.username}}/modificar">Configuración</a>
 		<a href = "#">Mis cursos</a>
 		<a href = "#">Crear un curso</a>
+		<a href = "/logout">Salir</a>
 		{% endif %}
 	</nav>
 

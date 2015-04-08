@@ -25,6 +25,17 @@ $app->post('/login', 'checkToken', function () use ( $app ) {
 })->name('login-post');
 
 
+/**********************************************************************
+Ruta que permite visualizar el formulario de inscripcion al sitio web
+**********************************************************************/
+$app->get('/logout', function () use ( $app ) {
+
+	$_SESSION 	=	array();
+	session_destroy();
+	$app->redirect( $app->urlFor('login-form') );
+
+})->name('logout');
+
 
 /**********************************************************************
 Ruta que permite visualizar el formulario de inscripcion al sitio web
@@ -61,3 +72,33 @@ $app->get('/user/:username', 'verificarInactividad', $authenticateForLevel(100),
 	$controller->callAction('index', $username);
 
 })->name('home-user');
+
+
+/*************************************************************************
+Ruta que muestra el formulario para modificar un usuario
+*************************************************************************/
+$app->get('/user/:username/modificar', 'verificarInactividad', $authenticateForLevel(100), function ($username) use ( $app ) {
+
+	$controller 	=	new UserController( $app );
+	$controller->callAction('updateUser', $username);
+
+})->name('form-modif-user');
+
+$app->put('/user/:username', 'checkToken', 'verificarInactividad', $authenticateForLevel(100), function ($username) use ( $app ) {
+
+	$post 	=	array('put' => $app->request->put(), 'usr' => $username);
+
+	$controller 	=	new UserController( $app );
+	$controller->callAction('updateUserAction', $post);
+
+})->name('modif-user-put');
+
+
+/*************************************************************************
+Ruta que permite guardar una foto de perfil
+*************************************************************************/
+$app->post('/avatar', function () use ( $app ) {
+
+})->name('guardar-avatar');
+
+

@@ -10,6 +10,8 @@ return array(
     'Authentication' => $baseDir . '/class/Authentication.class.php',
     'Connection' => $baseDir . '/model/Connection.class.php',
     'Controller' => $baseDir . '/controller/Controller.class.php',
+    'Country' => $baseDir . '/model/Country.class.php',
+    'File' => $baseDir . '/model/File.class.php',
     'FrontController' => $baseDir . '/controller/FrontController.class.php',
     'IndexUserView' => $baseDir . '/modelView/IndexUserView.class.php',
     'IndexView' => $baseDir . '/modelView/IndexView.class.php',
@@ -23,6 +25,7 @@ return array(
     'SuscribirmeView' => $baseDir . '/modelView/SuscribirmeView.class.php',
     'User' => $baseDir . '/model/User.class.php',
     'UserController' => $baseDir . '/controller/UserController.class.php',
+    'UserUpdateView' => $baseDir . '/modelView/UserUpdateView.class.php',
     'Utilities' => $baseDir . '/class/Utilities.class.php',
     'phpmailerException' => $vendorDir . '/phpmailer/phpmailer/class.phpmailer.php',
 );
