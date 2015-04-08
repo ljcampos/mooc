@@ -138,8 +138,8 @@ Formulario para modificar un usuario
 			        		</form>
 			      		</div>
 			      		<div class="modal-footer">
-			        		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-			        		<button type="button" class="sendImage btn btn-success">Guardar</button>
+			        		<button id = "clear-dropzone" type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			        		<button id = "sendImage" type="button" class="sendImage btn btn-success" disabled="disabled">Guardar</button>
 			      		</div>
 			    	</div>
 			  	</div>
@@ -170,11 +170,55 @@ $(document).ready(function() {
 });
 </script>
 <script>
+
+$('#close-zone-dragdrop').click(function () {
+
+	console.log("borrando bufer");
+
+
+});
+
+
+
 Dropzone.options.dropzone = {
 
+	autoProcessQueue: false, 
+
 	init: function() {
+
+		var _this = this;
+
+		/*
+			Obtenmos el elemento que nos permitira iniciar el envio
+			del archivo.
+		*/
+		var submitButon = document.getElementById("sendImage");
+
+		/*
+		 Obtenemos el elemento que permite cerrar la ventana modal en la cual 
+		 se muestra la zona drag and drop.
+		*/
+		var zone = document.getElementById("clear-dropzone");
+
+		/* 
+			Agregamos un evento al elemento "zone", el cual permitira reiniciar 
+			nuestro elemento drag and drop.
+		*/
+		zone.addEventListener("click", function () {
+			_this.removeAllFiles();
+		});
+
+		/* 
+			Agregamos un evento al elemento click "submitButton", este permitira procesar
+			el envio del archivo al servidor.
+		*/
+		submitButon.addEventListener("click", function () {
+			_this.processQueue();
+		});
+    	
+
 		this.on("maxfilesexceeded", function () {
-			//this.removeAllFiles(true);
+			
 			var fileList = this.getRejectedFiles();
 			fileList 	 = fileList[0];
 			this.removeFile(fileList);
@@ -182,15 +226,49 @@ Dropzone.options.dropzone = {
 			alert('Maximo de archivos');
 			
 		});
+
+		this.on("addedfile", function (file) {
+			console.log(file);
+
+			console.log("tipo de archivo: " + file.type);
+
+			if (!file.type.match("image/*")) {
+
+				alert("Extensión no válida");
+				this.removeFile(file);
+
+			}else if (file.upload.total > 2000000){
+				this.removeFile(file);
+				alert('Excede el tamaño máximo permitido');
+			} else {
+				
+				var removeButton =  Dropzone.createElement("<button>Eliminar imagen</button>");
+
+				removeButton.addEventListener("click", function (e) {
+
+					e.preventDefault();
+					e.stopPropagation();
+
+					_this.removeFile(file);
+
+				});
+
+				file.previewElement.appendChild(removeButton);
+				submitButon.disabled = false;
+			}
+
+		});
+
 	},
-	paramName: "file", // The name that will be used to transfer the file
+
+	paramName: "file", // El nombre que tendrá la variable en la cual recibiremos el archivo (lado servidor)
 	maxFilesize: 2, // MB
 	maxFiles: 1, //Maximo de archivos
 	uploadMultiple: false,
 	acceptedFiles: "image/*",
   	accept: function(file, done) {
     	done();
-    	
+    	console.log("primer mensaje");
     	console.log(file.name);
   	}
 };
